@@ -407,9 +407,14 @@ static void CMD_Lighting(uint8_t is_LightingSequence, int8_t is_LightingColorVal
 
 
 /*RBG_LED set*/
-void ApplicationFunctionSet::ApplicationFunctionSet_RGB_2(void)
+void ApplicationFunctionSet::ApplicationFunctionSet_RGB_Green(void)
 {
-  
+  AppRBG_LED.DeviceDriverSet_RBGLED_xxx(0 /*Duration*/, 2 /*Traversal_Number*/, CRGB::Green);
+}
+
+void ApplicationFunctionSet::ApplicationFunctionSet_RGB_Red(void)
+{
+  AppRBG_LED.DeviceDriverSet_RBGLED_xxx(0 /*Duration*/, 2 /*Traversal_Number*/, CRGB::Red);
 }
 
 
@@ -806,7 +811,7 @@ uint8_t ApplicationFunctionSet::ApplicationFunctionSet_Follow3(uint8_t start)
 uint8_t ApplicationFunctionSet::ApplicationFunctionSet_Follow4(uint8_t start_angle)
 {
   if (start_angle == -1) // Hasn't found object yet - do wider search
-    return Find_Closest_Angle_Scan_2(kown_angle,20,5);
+    return Find_Closest_Angle_Scan_2(start_angle,20,5);
    else
     return Find_Closest_Angle_Scan_2(start_angle,20,2);
 }

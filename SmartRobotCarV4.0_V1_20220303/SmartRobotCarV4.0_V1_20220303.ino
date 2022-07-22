@@ -11,7 +11,7 @@
 #include <avr/wdt.h>
 #include "ApplicationFunctionSet_xxx0.h"
 uint8_t target_angle = -1;
-uint8_t timeout = 1000;
+int timeout = 1000;
 uint8_t current_wait = 0;
 
 
@@ -25,14 +25,21 @@ void loop()
 {
   wdt_reset();  
   
+  GetAngleOfTarget(); // Every second tries to scan the frontish area of the car to find an object
+}
+
+int GetAngleOfTarget()
+{
   if ((millis() - current_wait) > timeout) // Should run every 1s
   {    
-    AppRBG_LED.DeviceDriverSet_RBGLED_xxx(0 /*Duration*/, 2 /*Traversal_Number*/, CRGB::RED);  // Turn LED Red during scan
+    Application_FunctionSet.ApplicationFunctionSet_RGB_Red();  // Turn LED Red during scan
     target_angle = Application_FunctionSet.ApplicationFunctionSet_Follow4(target_angle);
     current_wait = millis();    
   }
-  
-  AppRBG_LED.DeviceDriverSet_RBGLED_xxx(0 /*Duration*/, 2 /*Traversal_Number*/, CRGB::GREEN);  // Default LED to Green when doing nothing
+
+
+  if (target_angle != -1)
+    Application_FunctionSet.ApplicationFunctionSet_RGB_Green();  // Default LED to Green when target is detected!
 }
 
 

@@ -17,6 +17,8 @@ public:
   void ApplicationFunctionSet_Init(void);
   void ApplicationFunctionSet_Bootup(void);
   void ApplicationFunctionSet_RGB(void);
+  void ApplicationFunctionSet_RGB_Red(void);
+  void ApplicationFunctionSet_RGB_Green(void);
   void ApplicationFunctionSet_Expression(void);
   void ApplicationFunctionSet_Rocker(void);             //APP Rocker Control
   void ApplicationFunctionSet_Tracking(void);           //Line Tracking Mode
