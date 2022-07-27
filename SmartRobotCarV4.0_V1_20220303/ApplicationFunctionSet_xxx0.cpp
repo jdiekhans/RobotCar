@@ -728,16 +728,18 @@ void ApplicationFunctionSet::ApplicationFunctionSet_Obstacle(void)
 
 
 
-int Find_Closest_Angle_Scan_2(int starting_angle, int arc_size, int granularity)
+int Find_Closest_Angle_Scan_2(int starting_angle, int number_arc_steps, int step_size)
 {
   static uint16_t ULTRASONIC_Get = 0;
   int closest = 100; //Default to 100cm range
   int angle = -1; // -1 means nothing found within 100cm in the arc
 
   // Sweep one way
-  for (int i = -arc_size; i < arc_size; i++)
+  int arc_finish = number_arc_steps/2 * step_size;
+  int i = -arc_finish;
+  while (i <= arc_finish)
   {
-    AppServo.DeviceDriverSet_Servo_control(starting_angle - (i*granularity)); // Applies increasing offset based on granularity
+    AppServo.DeviceDriverSet_Servo_control(starting_angle - (i*step_size)); // Applies increasing offset based on granularity
     
     AppULTRASONIC.DeviceDriverSet_ULTRASONIC_Get(&ULTRASONIC_Get);
 
@@ -745,7 +747,9 @@ int Find_Closest_Angle_Scan_2(int starting_angle, int arc_size, int granularity)
     {
       closest = ULTRASONIC_Get;
       angle = starting_angle - (i*granularity);
-    }    
+    }
+
+    i += step_size;
   }  
   
   if (angle != -1)
@@ -811,9 +815,9 @@ uint8_t ApplicationFunctionSet::ApplicationFunctionSet_Follow3(uint8_t start)
 uint8_t ApplicationFunctionSet::ApplicationFunctionSet_Follow4(uint8_t start_angle)
 {
   if (start_angle == -1) // Hasn't found object yet - do wider search
-    return Find_Closest_Angle_Scan_2(start_angle,20,5);
-   else
-    return Find_Closest_Angle_Scan_2(start_angle,20,2);
+    return Find_Closest_Angle_Scan_2(start_angle,45,2);
+  else
+    return Find_Closest_Angle_Scan_2(start_angle,45,2);
 }
 
 /*
