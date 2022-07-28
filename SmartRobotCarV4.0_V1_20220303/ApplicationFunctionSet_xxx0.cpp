@@ -649,17 +649,15 @@ void ApplicationFunctionSet::ApplicationFunctionSet_Tracking(void)
   }
 }
 
-// object detection
-int ApplicationFunctionSet::DetectObject(void)
+// move towards object
+void ApplicationFunctionSet::MoveTowardsDetectObject(void)
 {
-    uint16_t ULTRASONIC_Get = 0;
-    AppULTRASONIC.DeviceDriverSet_ULTRASONIC_Get(&ULTRASONIC_Get /*out*/);
-    if (function_xxx(ULTRASONIC_Get, 0, 20)) //There is obstacle 20 cm ahead?
-    {
-      Serial.println("Found object");
-      Application_FunctionSet.ApplicationFunctionSet_RGB_Green();
-      return 1;
-    }
+    ApplicationFunctionSet_SmartRobotCarMotionControl(Forward, 100);
+}
+
+void ApplicationFunctionSet::StopCar(void)
+{
+  ApplicationFunctionSet_SmartRobotCarMotionControl(stop_it, 0);
 }
 
 /*
@@ -739,6 +737,71 @@ void ApplicationFunctionSet::ApplicationFunctionSet_Obstacle(void)
   }
 }
 
+/*
+  Obstacle Tracking Mode
+*/
+void ApplicationFunctionSet::ApplicationFunctionSet_ObstacleTracking(void)
+{
+  
+    uint8_t switc_ctrl = 0;
+    uint16_t get_Distance;
+    if (Car_LeaveTheGround == false)
+    {
+      ApplicationFunctionSet_SmartRobotCarMotionControl(stop_it, 0);
+      return;
+    }
+
+
+    AppULTRASONIC.DeviceDriverSet_ULTRASONIC_Get(&get_Distance /*out*/);
+    if (function_xxx(get_Distance, 0, 20))
+    {
+      ApplicationFunctionSet_SmartRobotCarMotionControl(Forward, 100);
+
+      for (uint8_t i = 1; i < 6; i += 2) //1、3、5 Omnidirectional detection of obstacle avoidance status
+      {
+        AppServo.DeviceDriverSet_Servo_control(30 * i /*Position_angle*/);
+        delay_xxx(1);
+        AppULTRASONIC.DeviceDriverSet_ULTRASONIC_Get(&get_Distance /*out*/);
+
+        if (function_xxx(get_Distance, 0, 20))
+        {
+          ApplicationFunctionSet_SmartRobotCarMotionControl(stop_it, 0);
+          if (5 == i)
+          {
+            ApplicationFunctionSet_SmartRobotCarMotionControl(Forward, 150);
+            delay_xxx(500);
+            ApplicationFunctionSet_SmartRobotCarMotionControl(Left, 150);
+            delay_xxx(50);
+            break;
+          }
+        }
+        else
+        {
+          switc_ctrl = 0;
+          switch (i)
+          {
+          case 1:
+            ApplicationFunctionSet_SmartRobotCarMotionControl(Right, 150);
+            break;
+          case 3:
+            ApplicationFunctionSet_SmartRobotCarMotionControl(Backward, 150);
+            break;
+          case 5:
+            ApplicationFunctionSet_SmartRobotCarMotionControl(Left, 150);
+            break;
+          }
+          delay_xxx(50);
+          break;
+        }
+      }
+    }
+    else //if (function_xxx(get_Distance, 20, 50))
+    {
+      ApplicationFunctionSet_SmartRobotCarMotionControl(Forward, 150);
+    }
+}
+
+
 
 
 int Find_Closest_Angle_Scan_2(int starting_angle, int number_arc_steps, int step_size)
@@ -756,7 +819,7 @@ int Find_Closest_Angle_Scan_2(int starting_angle, int number_arc_steps, int step
     
     AppULTRASONIC.DeviceDriverSet_ULTRASONIC_Get(&ULTRASONIC_Get);
 
-    if (ULTRASONIC_Get < closest)
+    if (function_xxx(ULTRASONIC_Get, 0, closest))
     {
       closest = ULTRASONIC_Get;
       angle = starting_angle - (i*step_size);

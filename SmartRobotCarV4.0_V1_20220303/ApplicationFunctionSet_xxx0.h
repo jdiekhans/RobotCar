@@ -23,6 +23,7 @@ public:
   void ApplicationFunctionSet_Rocker(void);             //APP Rocker Control
   void ApplicationFunctionSet_Tracking(void);           //Line Tracking Mode
   void ApplicationFunctionSet_Obstacle(void);           //Obstacle Avoidance
+  void ApplicationFunctionSet_ObstacleTracking(void);   //Obstacle follow
   void ApplicationFunctionSet_Follow(void);             //Following Mode
   uint8_t ApplicationFunctionSet_Follow3(uint8_t starting_angle);             //Following Mode  
   uint8_t ApplicationFunctionSet_Follow4(uint8_t starting_angle);             //Following Mode
@@ -33,6 +34,8 @@ public:
   void ApplicationFunctionSet_SerialPortDataAnalysis(void);
   void ApplicationFunctionSet_IRrecv(void);
   int DetectObject(void);
+  void StopCar(void);
+  void MoveTowardsDetectObject(void);
 
 public: /*CMD*/
   void CMD_UltrasoundModuleStatus_xxx0(uint8_t is_get);
@@ -76,6 +79,8 @@ private:
 
 public:
   boolean Car_LeaveTheGround = true;
+  boolean Car_IsTracking = true;
+  boolean Car_IsMoving = true;
 
   /*Sensor Threshold Setting*/
   const float VoltageDetection = 7.00;

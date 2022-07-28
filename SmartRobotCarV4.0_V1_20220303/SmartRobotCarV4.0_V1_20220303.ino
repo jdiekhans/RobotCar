@@ -23,19 +23,22 @@ void setup()
 
 void loop()
 {
-  wdt_reset();  
-
-  if(!targetFound) {
-//    targetFound = Application_FunctionSet.DetectObject();
-    while(!targetFound) 
-    {
-      GetAngleOfTarget(); // Every second tries to scan the frontish area of the car to find an object
-    }
-  }
-   else 
-  {
-    Application_FunctionSet.ApplicationFunctionSet_RGB_Green();
-  } 
+  wdt_reset();
+  Application_FunctionSet.ApplicationFunctionSet_SensorDataUpdate();
+  Application_FunctionSet.ApplicationFunctionSet_ObstacleTracking();
+  
+//  Application_FunctionSet.MoveTowardsDetectObject();
+//  if(!targetFound) {
+//  //    targetFound = Application_FunctionSet.DetectObject();
+//    while(!targetFound) 
+//    {
+//      GetAngleOfTarget(); // Every second tries to scan the frontish area of the car to find an object
+//    }
+//  }
+//   else 
+//  {
+//    Application_FunctionSet.ApplicationFunctionSet_RGB_Green();
+//  } 
   
 }
 
@@ -46,15 +49,19 @@ int GetAngleOfTarget()
     Application_FunctionSet.ApplicationFunctionSet_RGB_Red();  // Turn LED Red during scan
     target_angle = Application_FunctionSet.ApplicationFunctionSet_Follow4(target_angle);
     current_wait = millis();
-
-    // if the scanner finds something within a distance of x cm
-    
-//    Application_FunctionSet.DetectObject();
   }
-
-
   if (target_angle != -1)
     Application_FunctionSet.ApplicationFunctionSet_RGB_Green();  // Default LED to Green when target is detected!
+
+    // at the target angle (where the opponent is) move forward 100 units
+    
+
+
+    // after moving forward
+    // 1. stop the car
+    // 2. reset target_angle to find the opponent
+   Application_FunctionSet.ApplicationFunctionSet::StopCar();
+//   target_angle = -1;
 }
 
 
