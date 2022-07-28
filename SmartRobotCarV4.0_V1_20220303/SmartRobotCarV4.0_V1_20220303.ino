@@ -13,7 +13,7 @@
 uint8_t target_angle = -1;
 int timeout = 1000;
 uint8_t current_wait = 0;
-
+uint8_t targetFound = 0;
 
 void setup()
 {
@@ -24,8 +24,19 @@ void setup()
 void loop()
 {
   wdt_reset();  
+
+  if(!targetFound) {
+//    targetFound = Application_FunctionSet.DetectObject();
+    while(!targetFound) 
+    {
+      GetAngleOfTarget(); // Every second tries to scan the frontish area of the car to find an object
+    }
+  }
+   else 
+  {
+    Application_FunctionSet.ApplicationFunctionSet_RGB_Green();
+  } 
   
-  GetAngleOfTarget(); // Every second tries to scan the frontish area of the car to find an object
 }
 
 int GetAngleOfTarget()
@@ -34,13 +45,18 @@ int GetAngleOfTarget()
   {    
     Application_FunctionSet.ApplicationFunctionSet_RGB_Red();  // Turn LED Red during scan
     target_angle = Application_FunctionSet.ApplicationFunctionSet_Follow4(target_angle);
-    current_wait = millis();    
+    current_wait = millis();
+
+    // if the scanner finds something within a distance of x cm
+    
+//    Application_FunctionSet.DetectObject();
   }
 
 
   if (target_angle != -1)
     Application_FunctionSet.ApplicationFunctionSet_RGB_Green();  // Default LED to Green when target is detected!
 }
+
 
 
   /*

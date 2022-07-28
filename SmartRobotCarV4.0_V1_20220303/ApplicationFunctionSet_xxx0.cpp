@@ -649,6 +649,19 @@ void ApplicationFunctionSet::ApplicationFunctionSet_Tracking(void)
   }
 }
 
+// object detection
+int ApplicationFunctionSet::DetectObject(void)
+{
+    uint16_t ULTRASONIC_Get = 0;
+    AppULTRASONIC.DeviceDriverSet_ULTRASONIC_Get(&ULTRASONIC_Get /*out*/);
+    if (function_xxx(ULTRASONIC_Get, 0, 20)) //There is obstacle 20 cm ahead?
+    {
+      Serial.println("Found object");
+      Application_FunctionSet.ApplicationFunctionSet_RGB_Green();
+      return 1;
+    }
+}
+
 /*
   Obstacle Avoidance Mode
 */
@@ -746,7 +759,7 @@ int Find_Closest_Angle_Scan_2(int starting_angle, int number_arc_steps, int step
     if (ULTRASONIC_Get < closest)
     {
       closest = ULTRASONIC_Get;
-      angle = starting_angle - (i*granularity);
+      angle = starting_angle - (i*step_size);
     }
 
     i += step_size;
